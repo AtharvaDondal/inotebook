@@ -1,6 +1,9 @@
 //here using capital character because of it represent model..
 
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+
 
 const UserSchema = new Schema({
     name:{
@@ -23,4 +26,5 @@ const UserSchema = new Schema({
     }
   });
 
-  module.exports = mongoose.modela("user",UserSchema);
+  const user = mongoose.model('user',UserSchema);
+  module.exports = user;
