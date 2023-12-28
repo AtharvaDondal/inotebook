@@ -2,10 +2,13 @@ const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-var bcrypt = require('bcryptjs');
+var bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken")
 
-// create a user using: POST "/api/auth/createuser". doesen't require auth, no login required
+const JWT_SECRET = "Atharvaisagoodb$oy";
 
+
+// ROUTE 1: create a user using: POST "/api/auth/createuser". doesen't require auth, no login required
 router.post(
   "/createuser",
   [
@@ -27,14 +30,14 @@ router.post(
     try {
       //writing await because it return us an promise
       let user = await User.findOne({ email: req.body.email });
-      console.log(user)
+      console.log(user);
       if (user) {
         res
           .status(400)
           .json({ error: "sorry a user with this email already exists" });
       }
-      const salt = await bcrypt.genSalt(10)
-      secPass = await bcrypt.hash(req.body.password,salt) 
+      const salt = await bcrypt.genSalt(10);
+      const secPass = await bcrypt.hash(req.body.password, salt);
       //create a new user
       user = await User.create({
         name: req.body.name,
@@ -42,7 +45,15 @@ router.post(
         password: secPass,
       });
 
-      //here using async await so not need to use .then and catch         
+      const data = {
+        user:{
+          id: user.id
+        }
+      }
+      const authToken = jwt.sign(data, JWT_SECRET)
+
+      res.json({authToken})
+      //here using async await so not need to use .then and catch
       // .then(user => res.json(user))
       res.json(user);
     } catch (error) {
@@ -54,6 +65,51 @@ router.post(
       res.status(500).json({ error: "Some error occured" });
     }
   }
+);
+
+// ROUTE 2: authenticate a user: POST "/api/auth/login". doesen't require auth, no login required
+router.post(
+  "/login",
+  [
+    body("email", "Enter a valid Email").isEmail(),
+    body("password", "password cannot be blank").exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    //if there are errors return Bad request and the errors
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { email, password } = req.body;
+
+    try {
+      let user = await User.findOne({ email });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ errors: "Please try to login with correct credentials" });
+      }
+      //comparing password, it internally matches all hashes, we don't have to do anything manually
+      const passwordCompare = await bcrypt.compare(password, user.password);
+      if (!passwordCompare) {
+        return res
+          .status(400)
+          .json({ errors: "Please try to login with correct credentials" });
+      }
+      // sending user data, and sending only Id
+      const data = {
+        user:{
+          id: user.id
+        }
+      }
+      const authToken = jwt.sign(data,JWT_SECRET)
+      res.json({authToken})
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+  
 );
 
 module.exports = router;
