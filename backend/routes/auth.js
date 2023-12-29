@@ -3,7 +3,9 @@ const User = require("../models/User");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 var bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const fetchuser = require("../middleware/fetchuser");
+
 
 const JWT_SECRET = "Atharvaisagoodb$oy";
 
@@ -109,7 +111,24 @@ router.post(
       res.status(500).send("Internal Server Error");
     }
   }
-  
+
 );
+
+// ROUTE 3: Get loggedin user details using : POST "/api/auth/getuser",login required.
+router.post(
+  "/getuser",fetchuser,
+
+  async (req, res) => {
+try {
+  userId = req.user.id;
+  // here we can select all the fields except password, ie, -password
+  const user = await User.findById(userId).select("-password")
+  res.send(user)
+  
+}catch (error) {
+  console.error(error);
+  res.status(500).send("Internal Server Error");
+}
+})
 
 module.exports = router;
