@@ -74,7 +74,7 @@ router.put("/updatenote/:id", fetchuser, async (req, res) => {
   if (note.user.toString() !== req.user.id) {
     return res.status(401).send("Not Allowed");
   }
-  //new: true: if new contact is came, created basically. and $set: it sets previous note to updated one.
+  //new: true: if new contact is came, created basically. and $set: it sets existing note to updated one.
   note = await Note.findByIdAndUpdate(
     req.params.id,
     { $set: newNote },
