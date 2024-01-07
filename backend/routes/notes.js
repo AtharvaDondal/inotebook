@@ -52,6 +52,8 @@ router.post(
 
 // ROUTE 3:update an existing note using: PUT "/api/notes/updatenotes",login required.
 router.put("/updatenote/:id", fetchuser, async (req, res) => {
+   try {
+      
   const { title, description, tag } = req.body;
   // create a newNote object
   const newNote = {};
@@ -81,6 +83,32 @@ router.put("/updatenote/:id", fetchuser, async (req, res) => {
     { new: true }
   );
   res.json(note);
+}  catch (error) {
+   console.error(error);
+   res.status(500).send("Internal Server Error");
+ }
+});
+
+// ROUTE 4:delete an existing note using: DELETE "/api/notes/deletenote",login required.
+router.delete("/deletenote/:id", fetchuser, async (req, res) => {
+   try {
+        
+  // find the note to be deleted and delete it.
+  let note = await Note.findById(req.params.id);
+  if (!note) {
+    return res.status(404).send("Not Found");
+  }
+  //allow deletion if only user owns this note
+  if (note.user.toString() !== req.user.id) {
+    return res.status(401).send("Not Allowed");
+  }
+  //new: true: if new contact is came, created basically. and $set: it sets existing note to updated one.
+ note = await Note.findByIdAndDelete(req.params.id)
+ res.json({"sucess":"Note has been deleted",note:note})
+} catch (error) {
+   console.error(error);
+   res.status(500).send("Internal Server Error");
+ } 
 });
 
 module.exports = router;
