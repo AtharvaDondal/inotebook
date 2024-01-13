@@ -25,7 +25,7 @@ const AddNote = () => {
         <form className="my-3">
           <div className="mb-3">
             <label htmlFor="title" className="form-label">
-              title
+              Title
             </label>
             <input
               type="text"
@@ -38,7 +38,7 @@ const AddNote = () => {
           </div>
           <div className="mb-3">
             <label htmlFor="description" className="form-label">
-              description
+              Description
             </label>
             <input
               type="text"
@@ -63,7 +63,7 @@ const AddNote = () => {
             onClick={handleClick}
             className="btn btn-primary"
           >
-            Submit
+            Add Note]
           </button>
         </form>
       </div>
