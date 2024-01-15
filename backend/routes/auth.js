@@ -77,6 +77,7 @@ router.post(
     body("password", "password cannot be blank").exists(),
   ],
   async (req, res) => {
+    let sucess = false;
     const errors = validationResult(req);
     //if there are errors return Bad request and the errors
     if (!errors.isEmpty()) {
@@ -87,16 +88,18 @@ router.post(
     try {
       let user = await User.findOne({ email });
       if (!user) {
+        sucess = false
         return res
           .status(400)
-          .json({ errors: "Please try to login with correct credentials" });
+          .json({sucess, errors: "Please try to login with correct credentials" });
       }
       //comparing password, it internally matches all hashes, we don't have to do anything manually
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
+        sucess = false;
         return res
           .status(400)
-          .json({ errors: "Please try to login with correct credentials" });
+          .json({sucess,errors: "Please try to login with correct credentials" });
       }
       // sending user data, and sending only Id
       const data = {
@@ -105,7 +108,9 @@ router.post(
         }
       }
       const authToken = jwt.sign(data,JWT_SECRET)
-      res.json({authToken})
+       sucess = true
+      res.json({sucess,authToken})
+
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
