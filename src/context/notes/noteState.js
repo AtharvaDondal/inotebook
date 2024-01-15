@@ -44,20 +44,25 @@ const NoteState = (props) => {
 
       body: JSON.stringify({ title, description, tag }),
     });
-    const json = response.json(); // parses JSON response into native JavaScript objects
-    console.log(json);
+    // const json = response.json(); // parses JSON response into native JavaScript objects
+    // console.log(json);
 
-    const note = {
-      _id: "659786c9d5b3f7be4634abfb",
-      user: "657beb1a2b3433902b8bc67b",
-      title: title,
-      description: description,
-      tag: tag,
-      date: "2024-01-05T04:34:17.552Z",
-      __v: 0,
-    };
+    // const note = {
+    //   _id: "659786c9d5b3f7be4634abfb",
+    //   user: "657beb1a2b3433902b8bc67b",
+    //   title: title,
+    //   description: description,
+    //   tag: tag,
+    //   date: "2024-01-05T04:34:17.552Z",
+    //   __v: 0,
+    // };
+
+    // harry's
+    const note = await response.json()
     // // concat returns new array, while push method update existing array, that's why using concat method
-    setNotes(notes.concat(note));
+    setNotes(notes.concat(note))
+
+    
   };
 
   //Delete a Note

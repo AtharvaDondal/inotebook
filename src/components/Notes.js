@@ -88,6 +88,8 @@ const Notes = () => {
                     aria-describedby="emailHelp"
                     onChange={onChange}
                     value={note.etitle}
+                    minLength={5}
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -101,6 +103,8 @@ const Notes = () => {
                     name="edescription"
                     onChange={onChange}
                     value={note.edescription}
+                    minLength={5}
+                    required
                   />
                 </div>
 
@@ -132,6 +136,7 @@ const Notes = () => {
                 onClick={handleClick}
                 type="button"
                 className="btn btn-primary"
+                disabled={note.etitle.length<5 || note.edescription.length<5}
               >
                 Update Note
               </button>
@@ -142,6 +147,10 @@ const Notes = () => {
 
       <div className="row my-3">
         <h1>Your notes</h1>
+        {/* we can use && if we have nothing in else, if both is true then only text display */}
+        <div className="container mx-2">
+        {notes.length === 0 && "No notes to display"}
+        </div>
         {notes.map((note) => {
           return (
             <Noteitem note={note} key={note._id} updateNote={updateNote} />
