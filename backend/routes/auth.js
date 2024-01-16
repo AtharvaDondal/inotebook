@@ -6,9 +6,7 @@ var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
 
-
 const JWT_SECRET = "Atharvaisagoodb$oy";
-
 
 // ROUTE 1: create a user using: POST "/api/auth/createuser". doesen't require auth, no login required
 router.post(
@@ -21,10 +19,11 @@ router.post(
     }),
   ],
   async (req, res) => {
+    let sucess = false;
     const errors = validationResult(req);
     //if there are errors return Bad request and the errors
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({sucess,errors: errors.array() });
     }
 
     //check whether the user with this email exists already
@@ -32,11 +31,10 @@ router.post(
     try {
       //writing await because it return us an promise
       let user = await User.findOne({ email: req.body.email });
-      console.log(user);
       if (user) {
         res
           .status(400)
-          .json({ error: "sorry a user with this email already exists" });
+          .json({sucess,error: "sorry a user with this email already exists" });
       }
       const salt = await bcrypt.genSalt(10);
       const secPass = await bcrypt.hash(req.body.password, salt);
@@ -48,16 +46,16 @@ router.post(
       });
 
       const data = {
-        user:{
-          id: user.id
-        }
-      }
-      const authToken = jwt.sign(data, JWT_SECRET)
-
-      res.json({authToken})
+        user: {
+          id: user.id,
+        },
+      };
+      const authToken = jwt.sign(data, JWT_SECRET);
+      sucess = true
+      res.json({sucess,authToken});
       //here using async await so not need to use .then and catch
       // .then(user => res.json(user))
-      res.json(user);
+      // res.json(user);
     } catch (error) {
       if (error.code === 11000) {
         // Duplicate key error
@@ -88,10 +86,13 @@ router.post(
     try {
       let user = await User.findOne({ email });
       if (!user) {
-        sucess = false
+        sucess = false;
         return res
           .status(400)
-          .json({sucess, errors: "Please try to login with correct credentials" });
+          .json({
+            sucess,
+            errors: "Please try to login with correct credentials",
+          });
       }
       //comparing password, it internally matches all hashes, we don't have to do anything manually
       const passwordCompare = await bcrypt.compare(password, user.password);
@@ -99,41 +100,43 @@ router.post(
         sucess = false;
         return res
           .status(400)
-          .json({sucess,errors: "Please try to login with correct credentials" });
+          .json({
+            sucess,
+            errors: "Please try to login with correct credentials",
+          });
       }
       // sending user data, and sending only Id
       const data = {
-        user:{
-          id: user.id
-        }
-      }
-      const authToken = jwt.sign(data,JWT_SECRET)
-       sucess = true
-      res.json({sucess,authToken})
-
+        user: {
+          id: user.id,
+        },
+      };
+      const authToken = jwt.sign(data, JWT_SECRET);
+      sucess = true;
+      res.json({ sucess, authToken });
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
   }
-
 );
 
 // ROUTE 3: Get loggedin user details using : POST "/api/auth/getuser",login required.
 router.post(
-  "/getuser",fetchuser,
+  "/getuser",
+  fetchuser,
 
   async (req, res) => {
-try {
-  userId = req.user.id;
-  // here we can select all the fields except password, ie, -password
-  const user = await User.findById(userId).select("-password")
-  res.send(user)
-  
-}catch (error) {
-  console.error(error);
-  res.status(500).send("Internal Server Error");
-}
-})
+    try {
+      userId = req.user.id;
+      // here we can select all the fields except password, ie, -password
+      const user = await User.findById(userId).select("-password");
+      res.send(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 module.exports = router;
