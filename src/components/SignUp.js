@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-const SignUp = () => {
-  const [credentials, setCredentials] = useState({name:"",email: "", password: "",cpassword:"" });
+const SignUp = (props) => {
+  const [credentials, setCredentials] = useState({
+    name: "",
+    email: "",
+    password: "",
+    cpassword: "",
+  });
   let navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const {name,email,password} = credentials
+    const { name, email, password } = credentials;
     const response = await fetch("http://localhost:5000/api/auth/createuser", {
       method: "POST",
       headers: {
@@ -27,9 +31,10 @@ const SignUp = () => {
       // save it to the localStorage
       localStorage.setItem("token", json.authtoken);
       navigate("/");
+      props.showAlert("Account Created Sucessfully", "success");
     } else {
       // it is a javascript's native alert
-      alert("Invalid Credentials");
+      props.showAlert("Invalid Details","danger");
     }
   };
 

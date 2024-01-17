@@ -3,9 +3,9 @@ import noteContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
 
-const Notes = () => {
+const Notes = (props) => {
   const context = useContext(noteContext);
-  const { notes, getNotes,editNote } = context;
+  const { notes, getNotes, editNote } = context;
 
   useEffect(() => {
     getNotes(notes);
@@ -29,11 +29,13 @@ const Notes = () => {
       edescription: currentNote.description,
       etag: currentNote.tag,
     });
+    props.showAlert("Updated sucessfully", "success");
   };
 
   const handleClick = () => {
-    editNote(note.id, note.etitle, note.edescription,note.etag)
+    editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
+    props.showAlert("Updated successfully","success")
   };
   const onChange = (e) => {
     //setNote({...note}): value in the note object should be available there, that's why using spread operator and which properties is writing after that [], that will be added or override..
@@ -42,7 +44,7 @@ const Notes = () => {
 
   return (
     <>
-      <AddNote />
+      <AddNote showAlert={props.showAlert} />
 
       <button
         type="button"
@@ -136,7 +138,9 @@ const Notes = () => {
                 onClick={handleClick}
                 type="button"
                 className="btn btn-primary"
-                disabled={note.etitle.length<5 || note.edescription.length<5}
+                disabled={
+                  note.etitle.length < 5 || note.edescription.length < 5
+                }
               >
                 Update Note
               </button>
@@ -149,11 +153,16 @@ const Notes = () => {
         <h1>Your notes</h1>
         {/* we can use && if we have nothing in else, if both is true then only text display */}
         <div className="container mx-2">
-        {notes.length === 0 && "No notes to display"}
+          {notes.length === 0 && "No notes to display"}
         </div>
         {notes.map((note) => {
           return (
-            <Noteitem note={note} key={note._id} updateNote={updateNote} />
+            <Noteitem
+              note={note}
+              key={note._id}
+              showAlert={props.showAlert}
+              updateNote={updateNote}
+            />
           );
         })}
       </div>
