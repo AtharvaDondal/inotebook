@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 const Login = (props) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   let navigate = useNavigate();
@@ -19,15 +20,18 @@ const Login = (props) => {
     });
     const json = await response.json();
     console.log(json);
-    if (json.sucess) {
+    if (json.success) {
       // save the authtoken and redirect
       // save it to the localStorage
-      localStorage.setItem("token", json.authtoken);
-      navigate("/");
-      props.showAlert("Logged in successfully", "success");
-    } else {
-      // it is a javascript's native alert
-      props.showAlert("Invalid Credentials", "danger");
+      try {
+        // localStorage.setItem("token",json.authtoken)
+        localStorage.setItem("token",json.authToken)
+        props.showAlert("Logged in successfully", "success");
+        navigate("/");
+      } catch (error) {
+        props.showAlert("Invalid Credentials", "danger");
+        console.error("Error storing token in localStorage:", error);
+      }
     }
   };
 
@@ -37,7 +41,8 @@ const Login = (props) => {
   };
 
   return (
-    <div>
+    <div className="mt-3">
+      <h2>Login to continue to iNotebook</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">

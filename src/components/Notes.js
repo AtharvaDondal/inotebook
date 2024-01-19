@@ -2,13 +2,21 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import noteContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
+import { useNavigate } from "react-router-dom";
+
 
 const Notes = (props) => {
   const context = useContext(noteContext);
   const { notes, getNotes, editNote } = context;
+  let navigate = useNavigate();
 
   useEffect(() => {
-    getNotes(notes);
+    if (localStorage.getItem("token")){
+      getNotes();
+    } else {
+      navigate("/login");
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -35,7 +43,7 @@ const Notes = (props) => {
   const handleClick = () => {
     editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
-    props.showAlert("Updated successfully","success")
+    props.showAlert("Updated successfully", "success");
   };
   const onChange = (e) => {
     //setNote({...note}): value in the note object should be available there, that's why using spread operator and which properties is writing after that [], that will be added or override..

@@ -19,11 +19,11 @@ router.post(
     }),
   ],
   async (req, res) => {
-    let sucess = false;
+    let success = false;
     const errors = validationResult(req);
     //if there are errors return Bad request and the errors
     if (!errors.isEmpty()) {
-      return res.status(400).json({sucess,errors: errors.array() });
+      return res.status(400).json({success,errors: errors.array() });
     }
 
     //check whether the user with this email exists already
@@ -34,7 +34,7 @@ router.post(
       if (user) {
         res
           .status(400)
-          .json({sucess,error: "sorry a user with this email already exists" });
+          .json({success,error: "sorry a user with this email already exists" });
       }
       const salt = await bcrypt.genSalt(10);
       const secPass = await bcrypt.hash(req.body.password, salt);
@@ -51,8 +51,8 @@ router.post(
         },
       };
       const authToken = jwt.sign(data, JWT_SECRET);
-      sucess = true
-      res.json({sucess,authToken});
+      success = true
+      res.json({success,authToken});
       //here using async await so not need to use .then and catch
       // .then(user => res.json(user))
       // res.json(user);
@@ -75,33 +75,32 @@ router.post(
     body("password", "password cannot be blank").exists(),
   ],
   async (req, res) => {
-    let sucess = false;
+    let success = false;
     const errors = validationResult(req);
     //if there are errors return Bad request and the errors
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({success, errors: errors.array() });
     }
     const { email, password } = req.body;
 
     try {
       let user = await User.findOne({ email });
       if (!user) {
-        sucess = false;
         return res
           .status(400)
           .json({
-            sucess,
+            success,
             errors: "Please try to login with correct credentials",
           });
       }
       //comparing password, it internally matches all hashes, we don't have to do anything manually
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
-        sucess = false;
+        success = false;
         return res
           .status(400)
           .json({
-            sucess,
+            success,
             errors: "Please try to login with correct credentials",
           });
       }
@@ -112,8 +111,8 @@ router.post(
         },
       };
       const authToken = jwt.sign(data, JWT_SECRET);
-      sucess = true;
-      res.json({ sucess, authToken });
+      success = true;
+      res.json({ success, authToken });
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");

@@ -17,8 +17,7 @@ const NoteState = (props) => {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU3YmViMWEyYjM0MzM5MDJiOGJjNjdiIn0sImlhdCI6MTcwMzc2MDY0M30.2dVPk-cboxWK7TVuWnJ1k8ceN-tXRHJBPDt9qa38MhQ",
+        "auth-token": localStorage.getItem("token"),
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
 
@@ -37,8 +36,7 @@ const NoteState = (props) => {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU3YmViMWEyYjM0MzM5MDJiOGJjNjdiIn0sImlhdCI6MTcwMzc2MDY0M30.2dVPk-cboxWK7TVuWnJ1k8ceN-tXRHJBPDt9qa38MhQ",
+        "auth-token": localStorage.getItem("token"),
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
 
@@ -58,11 +56,9 @@ const NoteState = (props) => {
     // };
 
     // harry's
-    const note = await response.json()
+    const note = await response.json();
     // // concat returns new array, while push method update existing array, that's why using concat method
-    setNotes(notes.concat(note))
-
-    
+    setNotes(notes.concat(note));
   };
 
   //Delete a Note
@@ -72,8 +68,7 @@ const NoteState = (props) => {
 
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU3YmViMWEyYjM0MzM5MDJiOGJjNjdiIn0sImlhdCI6MTcwMzc2MDY0M30.2dVPk-cboxWK7TVuWnJ1k8ceN-tXRHJBPDt9qa38MhQ",
+        "auth-token": localStorage.getItem("token"),
       },
     });
     const json = response.json();
@@ -96,8 +91,7 @@ const NoteState = (props) => {
 
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjU3YmViMWEyYjM0MzM5MDJiOGJjNjdiIn0sImlhdCI6MTcwMzc2MDY0M30.2dVPk-cboxWK7TVuWnJ1k8ceN-tXRHJBPDt9qa38MhQ",
+        "auth-token": localStorage.getItem("token"),
       },
 
       body: JSON.stringify({ title, description, tag }),
